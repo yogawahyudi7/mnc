@@ -18,3 +18,7 @@ type Transaction struct {
 	UpdatedAt       *time.Time      `gorm:"column:updated_at"`
 	DeletedAt       *gorm.DeletedAt `gorm:"column:deleted_at"`
 }
+
+func (t *Transaction) TableName() string {
+	return "transaction"
+}

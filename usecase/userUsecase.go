@@ -2,32 +2,35 @@ package usecase
 
 import (
 	"errors"
-
-	"github.com/yogawahyudi7/mnc/dto"
-	"github.com/yogawahyudi7/mnc/model"
-	"github.com/yogawahyudi7/mnc/pkg/constant"
-	"github.com/yogawahyudi7/mnc/pkg/validator"
-	"github.com/yogawahyudi7/mnc/repository"
+	"time"
 
 	"github.com/google/uuid"
+	"github.com/yogawahyudi7/mnc/config"
+	"github.com/yogawahyudi7/mnc/dto"
+	model "github.com/yogawahyudi7/mnc/model"
+	"github.com/yogawahyudi7/mnc/pkg/constant"
+	"github.com/yogawahyudi7/mnc/pkg/jwt"
+	"github.com/yogawahyudi7/mnc/pkg/validator"
+	"github.com/yogawahyudi7/mnc/repository"
 )
 
 type UserUsecase interface {
 	RegisterUser(request dto.RegisterRequest) (*dto.RegisterResponse, error)
 	Login(request dto.LoginRequest) (*dto.LoginResponse, error)
+	RefreshToken(token string) (*dto.LoginResponse, error)
 }
 
 type userUsecase struct {
-	userRepo repository.UserRepository
+	config    *config.Server
+	userRepo  repository.UserRepository
+	tokenRepo repository.RefreshTokenRepository
 }
 
-func NewUserUsecase(userRepo repository.UserRepository) UserUsecase {
-	return &userUsecase{userRepo}
+func NewUserUsecase(config *config.Server, userRepo repository.UserRepository, tokenRepo repository.RefreshTokenRepository) UserUsecase {
+	return &userUsecase{config, userRepo, tokenRepo}
 }
 
 func (u *userUsecase) RegisterUser(request dto.RegisterRequest) (*dto.RegisterResponse, error) {
-
-	// Validasi PIN
 	if !validator.IsValidPin(request.Pin) {
 		return nil, errors.New("PIN must be a 6-digit number")
 	}
@@ -63,19 +66,55 @@ func (u *userUsecase) RegisterUser(request dto.RegisterRequest) (*dto.RegisterRe
 }
 
 func (u *userUsecase) Login(request dto.LoginRequest) (*dto.LoginResponse, error) {
-
 	user, err := u.userRepo.GetUserByPhoneNumber(request.PhoneNumber)
 	if err != nil || user.Pin != request.Pin {
 		return nil, errors.New("phone number and PIN doesn't match")
 	}
 
-	// Generate JWT token (simplified for brevity)
-	token := "generated-jwt-token"
-	refreshToken := "generated-refresh-token"
+	token, err := jwt.GenerateToken(u.config, user.Id.String(), constant.TokenTypeAccess, u.config.TokenDuration)
+	if err != nil {
+		return nil, err
+	}
+
+	refreshToken, err := jwt.GenerateToken(u.config, user.Id.String(), constant.TokenTypeRefresh, u.config.RefreshTokenDuration)
+	if err != nil {
+		return nil, err
+	}
+
+	timeDuration, _ := time.ParseDuration(u.config.RefreshTokenDuration)
+
+	refreshTokenModel := &model.RefreshToken{
+		Token:     refreshToken,
+		UserID:    user.Id,
+		Revoked:   false,
+		ExpiresAt: time.Now().Add(timeDuration),
+	}
+	if err := u.tokenRepo.CreateRefreshToken(refreshTokenModel); err != nil {
+		return nil, err
+	}
 
 	response := &dto.LoginResponse{
 		AccessToken:  token,
 		RefreshToken: refreshToken,
+	}
+
+	return response, nil
+}
+
+func (u *userUsecase) RefreshToken(token string) (*dto.LoginResponse, error) {
+	refreshToken, err := u.tokenRepo.GetToken(token)
+	if err != nil || refreshToken.ExpiresAt.Before(time.Now()) || refreshToken.Revoked {
+		return nil, errors.New(constant.InvalidExpiredToken)
+	}
+
+	newAccessToken, err := jwt.GenerateToken(u.config, refreshToken.UserID.String(), constant.TokenTypeAccess, u.config.TokenDuration)
+	if err != nil {
+		return nil, err
+	}
+
+	response := &dto.LoginResponse{
+		AccessToken:  newAccessToken,
+		RefreshToken: token, // Refresh token remains the same
 	}
 
 	return response, nil

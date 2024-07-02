@@ -12,17 +12,28 @@ import (
 )
 
 func main() {
+
+	// setup
 	setup := &config.Server{}
 	setup.Load()
 
+	// database
 	db := database.NewDatabase(setup)
 
+	// repository
+	tokenRepository := repository.NewTokenRepository(db)
 	userRepository := repository.NewUserRepository(db)
-	userUsecase := usecase.NewUserUsecase(userRepository)
+
+	// usecase
+	userUsecase := usecase.NewUserUsecase(setup, userRepository, tokenRepository)
+
+	// controller
 	userController := controller.NewUserController(userUsecase)
 
+	// router
 	app := fiber.New()
 	router.SetupUserRoutes(app, userController)
 
+	// run app
 	app.Listen(setup.AppPort)
 }

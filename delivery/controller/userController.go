@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/yogawahyudi7/mnc/dto"
+	"github.com/yogawahyudi7/mnc/pkg/constant"
 	"github.com/yogawahyudi7/mnc/usecase"
 
 	"github.com/gofiber/fiber/v2"
@@ -21,7 +22,7 @@ func (c *UserController) Register(ctx *fiber.Ctx) error {
 	var req dto.RegisterRequest
 	if err := ctx.BodyParser(&req); err != nil {
 		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{
-			"message": "invalid request body",
+			"message": constant.InvalidRequestBody,
 		})
 	}
 
@@ -33,7 +34,7 @@ func (c *UserController) Register(ctx *fiber.Ctx) error {
 	}
 
 	return ctx.Status(http.StatusOK).JSON(fiber.Map{
-		"status": "SUCCESS",
+		"status": constant.UpperCaseSuccess,
 		"result": response,
 	})
 }
@@ -42,7 +43,7 @@ func (c *UserController) Login(ctx *fiber.Ctx) error {
 	var req dto.LoginRequest
 	if err := ctx.BodyParser(&req); err != nil {
 		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{
-			"message": "invalid request body",
+			"message": constant.InvalidRequestBody,
 		})
 	}
 
@@ -54,7 +55,7 @@ func (c *UserController) Login(ctx *fiber.Ctx) error {
 	}
 
 	return ctx.Status(http.StatusOK).JSON(fiber.Map{
-		"status": "SUCCESS",
+		"status": constant.UpperCaseSuccess,
 		"result": response,
 	})
 }

@@ -23,9 +23,10 @@ type Server struct {
 		TimeZone string
 	}
 
-	SecretKey     string
-	TokenDuration string
-	TimeNow       time.Time
+	SecretKey            string
+	TokenDuration        string
+	RefreshTokenDuration string
+	TimeNow              time.Time
 }
 
 func (s *Server) Load() *Server {
@@ -50,6 +51,7 @@ func (s *Server) Load() *Server {
 
 	s.SecretKey = os.Getenv("SECRETKEY")
 	s.TokenDuration = os.Getenv("TOKENDURATION")
+	s.RefreshTokenDuration = os.Getenv("REFRESHTOKENDURATION")
 	s.TimeNow = time.Now()
 
 	return s
