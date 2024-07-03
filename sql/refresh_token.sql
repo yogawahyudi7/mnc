@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS refresh_token (
+CREATE TABLE IF NOT EXISTS "refresh_token" (
     id SERIAL PRIMARY KEY,
     token VARCHAR(255) NOT NULL,
     user_id UUID NOT NULL,
