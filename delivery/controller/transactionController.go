@@ -92,3 +92,54 @@ func (c *TransactionController) Transfer(ctx *fiber.Ctx) error {
 		"result": response,
 	})
 }
+
+func (c *TransactionController) ListTransactions(ctx *fiber.Ctx) error {
+
+	claims := ctx.Locals(constant.UserContext).(jwt.MapClaims)
+	id := claims["id"].(string)
+
+	data, err := c.transactionUsecase.ListTransactions(id)
+	if err != nil {
+		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{
+			"message": err.Error(),
+		})
+	}
+
+	result := []map[string]interface{}{}
+	for _, v := range data {
+
+		paymentMethod := ""
+		idType := ""
+
+		switch v.TransactionType {
+		case constant.TopUpType:
+			paymentMethod = constant.UpperCaseCredit
+			idType = constant.TopUpIdSnakeCase
+		case constant.TransferType:
+			paymentMethod = constant.UpperCaseDebit
+			idType = constant.TransferIdSnakeCase
+		case constant.PaymentType:
+			paymentMethod = constant.UpperCaseDebit
+			idType = constant.PaymentIdSnakeCase
+		}
+
+		results := map[string]interface{}{
+			idType:             v.TransactionID,
+			"status":           constant.UpperCaseSuccess,
+			"user_id":          v.UserId,
+			"transaction_type": paymentMethod,
+			"amount":           v.Amount,
+			"remarks":          v.Remarks,
+			"balance_before":   v.BalanceBefore,
+			"balance_after":    v.BalanceAfter,
+			"created_date":     v.CreatedDate,
+		}
+
+		result = append(result, results)
+	}
+
+	return ctx.Status(http.StatusOK).JSON(fiber.Map{
+		"status": constant.UpperCaseSuccess,
+		"result": result,
+	})
+}

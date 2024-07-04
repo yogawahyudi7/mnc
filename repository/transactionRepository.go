@@ -27,7 +27,7 @@ func (r *transactionRepository) CreateTransaction(transaction *model.Transaction
 
 func (r *transactionRepository) GetTransactionByUserID(id string) ([]model.Transaction, error) {
 	var transactions []model.Transaction
-	if err := r.db.Where("user_id = ?", id).Find(&transactions).Error; err != nil {
+	if err := r.db.Where("user_id = ?", id).Order("created_at DESC").Find(&transactions).Error; err != nil {
 		return nil, err
 	}
 	return transactions, nil

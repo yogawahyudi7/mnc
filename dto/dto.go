@@ -73,12 +73,14 @@ type PaymentResponse struct {
 }
 
 type TransactionHistoryResponse struct {
-	TransactionID uuid.UUID `json:"transaction_id"`
-	Transaction   string    `json:"transaction"`
-	Amount        float64   `json:"amount"`
-	BalanceBefore float64   `json:"balance_before"`
-	BalanceAfter  float64   `json:"balance_after"`
-	CreatedDate   string    `json:"created_date"`
+	TransactionID   uuid.UUID `json:"transaction_id"`
+	TransactionType string    `json:"transaction_type"`
+	UserId          uuid.UUID `json:"user_id"`
+	Amount          float64   `json:"amount"`
+	Remarks         string    `json:"remarks"`
+	BalanceBefore   float64   `json:"balance_before"`
+	BalanceAfter    float64   `json:"balance_after"`
+	CreatedDate     string    `json:"created_date"`
 }
 
 type UpdateUserRequest struct {

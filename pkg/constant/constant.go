@@ -11,6 +11,8 @@ const (
 	InvalidRequestBody  = "invalid request body"
 
 	UpperCaseSuccess = "SUCCESS"
+	UpperCaseDebit   = "DEBIT"
+	UpperCaseCredit  = "CREDIT"
 
 	AuthorizationHeader = "Authorization"
 	UserContext         = "user"
@@ -21,4 +23,8 @@ const (
 	PaymentType  = "payment"
 
 	TopUpRemarks = "Top Up"
+
+	TransferIdSnakeCase = "transfer_id"
+	TopUpIdSnakeCase    = "top_up_id"
+	PaymentIdSnakeCase  = "payment_id"
 )

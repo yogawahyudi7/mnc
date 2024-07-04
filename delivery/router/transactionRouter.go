@@ -11,4 +11,5 @@ func RegisterTransactionRoutes(router fiber.Router, config *config.Server, contr
 	router.Post("/topup", middleware.Authentication(config), controller.TopUp)
 	router.Post("/payment", middleware.Authentication(config), controller.Payment)
 	router.Post("/transfer", middleware.Authentication(config), controller.Transfer)
+	router.Get("/list", middleware.Authentication(config), controller.ListTransactions)
 }

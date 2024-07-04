@@ -16,6 +16,7 @@ type TransactionUsecase interface {
 	TopUp(request dto.TopUpRequest, id string) (*dto.TopUpResponse, error)
 	Transfer(request dto.TransferRequest, id string) (*dto.TransferResponse, error)
 	Payment(request dto.PaymentRequest, id string) (*dto.PaymentResponse, error)
+	ListTransactions(id string) ([]dto.TransactionHistoryResponse, error)
 }
 
 type transactionUsecase struct {
@@ -165,6 +166,29 @@ func (u *transactionUsecase) Payment(request dto.PaymentRequest, id string) (*dt
 		BalanceAfter:  dataTransaction.BalanceAfter,
 		Remarks:       request.Remarks,
 		CreatedDate:   dataTransaction.CreatedAt.Format(constant.TimeFormatYMDHMS),
+	}
+
+	return response, nil
+}
+
+func (u *transactionUsecase) ListTransactions(id string) ([]dto.TransactionHistoryResponse, error) {
+	transactions, err := u.transactionRepo.GetTransactionByUserID(id)
+	if err != nil {
+		return nil, err
+	}
+
+	var response []dto.TransactionHistoryResponse
+	for _, transaction := range transactions {
+		response = append(response, dto.TransactionHistoryResponse{
+			TransactionID:   transaction.Id,
+			TransactionType: transaction.TransactionType,
+			UserId:          transaction.UserId,
+			Amount:          transaction.Amount,
+			Remarks:         transaction.Remarks,
+			BalanceBefore:   transaction.BalanceBefore,
+			BalanceAfter:    transaction.BalanceAfter,
+			CreatedDate:     transaction.CreatedAt.Format(constant.TimeFormatYMDHMS),
+		})
 	}
 
 	return response, nil
