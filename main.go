@@ -23,14 +23,17 @@ func main() {
 	// repository
 	tokenRepository := repository.NewTokenRepository(db)
 	userRepository := repository.NewUserRepository(db)
+	transactionRepository := repository.NewTransactionRepository(db)
 
 	// usecase
 	authUsecase := usecase.NewAuthUsecase(setup, userRepository, tokenRepository)
 	userUsecase := usecase.NewUserUsecase(setup, userRepository, tokenRepository)
+	transactionUsecase := usecase.NewTransactionUsecase(setup, userRepository, transactionRepository)
 
 	// controller
 	authController := controller.NewAuthController(authUsecase)
 	userController := controller.NewUserController(userUsecase)
+	transactionController := controller.NewTransactionController(transactionUsecase)
 
 	// router
 	app := fiber.New()
@@ -39,6 +42,9 @@ func main() {
 
 	userGroup := app.Group("/user")
 	router.RegisterUserRoutes(userGroup, setup, userController)
+
+	transactionGroup := app.Group("/transaction")
+	router.RegisterTransactionRoutes(transactionGroup, setup, transactionController)
 
 	// run app
 	app.Listen(setup.AppPort)

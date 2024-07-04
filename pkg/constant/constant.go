@@ -15,4 +15,10 @@ const (
 	AuthorizationHeader = "Authorization"
 	UserContext         = "user"
 	InvalidToken        = "invalid token"
+
+	TransferType = "transfer"
+	TopUpType    = "topup"
+	PaymentType  = "payment"
+
+	TopUpRemarks = "Top Up"
 )

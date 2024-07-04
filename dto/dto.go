@@ -1,8 +1,6 @@
 package dto
 
 import (
-	"time"
-
 	"github.com/google/uuid"
 )
 
@@ -38,11 +36,11 @@ type TopUpRequest struct {
 }
 
 type TopUpResponse struct {
-	TopUpID       uuid.UUID  `json:"top_up_id"`
-	AmountTopUp   float64    `json:"amount_top_up"`
-	BalanceBefore float64    `json:"balance_before"`
-	BalanceAfter  float64    `json:"balance_after"`
-	CreatedDate   *time.Time `json:"created_date"`
+	TopUpID       uuid.UUID `json:"top_up_id"`
+	AmountTopUp   float64   `json:"amount_top_up"`
+	BalanceBefore float64   `json:"balance_before"`
+	BalanceAfter  float64   `json:"balance_after"`
+	CreatedDate   string    `json:"created_date"`
 }
 
 type TransferRequest struct {
@@ -52,11 +50,11 @@ type TransferRequest struct {
 }
 
 type TransferResponse struct {
-	TransferID    uuid.UUID  `json:"transfer_id"`
-	Amount        float64    `json:"amount"`
-	BalanceBefore float64    `json:"balance_before"`
-	BalanceAfter  float64    `json:"balance_after"`
-	CreatedDate   *time.Time `json:"created_date"`
+	TransferID    uuid.UUID `json:"transfer_id"`
+	Amount        float64   `json:"amount"`
+	BalanceBefore float64   `json:"balance_before"`
+	BalanceAfter  float64   `json:"balance_after"`
+	CreatedDate   string    `json:"created_date"`
 }
 
 type PaymentRequest struct {
@@ -65,27 +63,26 @@ type PaymentRequest struct {
 }
 
 type PaymentResponse struct {
-	PaymentID     uuid.UUID  `json:"payment_id"`
-	AmountPayment float64    `json:"amount_payment"`
-	BalanceBefore float64    `json:"balance_before"`
-	BalanceAfter  float64    `json:"balance_after"`
-	CreatedDate   *time.Time `json:"created_date"`
+	PaymentID     uuid.UUID `json:"payment_id"`
+	AmountPayment float64   `json:"amount_payment"`
+	BalanceBefore float64   `json:"balance_before"`
+	BalanceAfter  float64   `json:"balance_after"`
+	CreatedDate   string    `json:"created_date"`
 }
 
 type TransactionHistoryResponse struct {
-	TransactionID uuid.UUID  `json:"transaction_id"`
-	Transaction   string     `json:"transaction"`
-	Amount        float64    `json:"amount"`
-	BalanceBefore float64    `json:"balance_before"`
-	BalanceAfter  float64    `json:"balance_after"`
-	CreatedDate   *time.Time `json:"created_date"`
+	TransactionID uuid.UUID `json:"transaction_id"`
+	Transaction   string    `json:"transaction"`
+	Amount        float64   `json:"amount"`
+	BalanceBefore float64   `json:"balance_before"`
+	BalanceAfter  float64   `json:"balance_after"`
+	CreatedDate   string    `json:"created_date"`
 }
 
 type UpdateUserRequest struct {
-	FirstName   string `json:"first_name"`
-	LastName    string `json:"last_name"`
-	Address     string `json:"address"`
-	PhoneNumber string `json:"phone_number"`
+	FirstName string `json:"first_name"`
+	LastName  string `json:"last_name"`
+	Address   string `json:"address"`
 }
 
 type UpdateUserResponse struct {

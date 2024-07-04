@@ -7,13 +7,11 @@ import (
 )
 
 type RefreshToken struct {
-	ID        uint       `gorm:"primaryKey"`
+	Id        uuid.UUID  `gorm:"type:uuid;not null"`
 	Token     string     `gorm:"unique;not null"`
-	UserID    uuid.UUID  `gorm:"type:uuid;not null"`
 	ExpiresAt time.Time  `gorm:"not null"`
 	Revoked   bool       `gorm:"not null;default:false"`
-	CreatedAt *time.Time `gorm:"not null;default:CURRENT_TIMESTAMP"`
-	UpdatedAt *time.Time `gorm:"not null;default:CURRENT_TIMESTAMP"`
+	UpdatedAt *time.Time `gorm:"column:updated_at"`
 }
 
 func (r *RefreshToken) TableName() string {

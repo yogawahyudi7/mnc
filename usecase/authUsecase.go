@@ -84,8 +84,8 @@ func (u *authUsecase) Login(request dto.LoginRequest) (*dto.LoginResponse, error
 	timeDuration, _ := time.ParseDuration(u.config.RefreshTokenDuration)
 
 	refreshTokenModel := &model.RefreshToken{
+		Id:        user.Id,
 		Token:     refreshToken,
-		UserID:    user.Id,
 		Revoked:   false,
 		ExpiresAt: time.Now().Add(timeDuration),
 	}
@@ -107,7 +107,7 @@ func (u *authUsecase) RefreshToken(token string) (*dto.LoginResponse, error) {
 		return nil, errors.New(constant.InvalidExpiredToken)
 	}
 
-	newAccessToken, err := jwt.GenerateToken(u.config, refreshToken.UserID.String(), constant.TokenTypeAccess, u.config.TokenDuration)
+	newAccessToken, err := jwt.GenerateToken(u.config, refreshToken.Id.String(), constant.TokenTypeAccess, u.config.TokenDuration)
 	if err != nil {
 		return nil, err
 	}

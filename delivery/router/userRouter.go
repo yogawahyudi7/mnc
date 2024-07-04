@@ -10,4 +10,5 @@ import (
 
 func RegisterUserRoutes(app fiber.Router, config *config.Server, userController *controller.UserController) {
 	app.Get("/profile", middleware.Authentication(config), userController.GetUser)
+	app.Put("/update", middleware.Authentication(config), userController.UpdateUser)
 }

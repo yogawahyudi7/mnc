@@ -4,22 +4,24 @@ import (
 	"net/http"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/golang-jwt/jwt/v4"
 	"github.com/yogawahyudi7/mnc/dto"
 	"github.com/yogawahyudi7/mnc/pkg/constant"
 	"github.com/yogawahyudi7/mnc/usecase"
 )
 
-type transactionController struct {
+type TransactionController struct {
 	transactionUsecase usecase.TransactionUsecase
 }
 
-func NewTransactionController(transactionUsecase usecase.TransactionUsecase) *transactionController {
-	return &transactionController{transactionUsecase}
+func NewTransactionController(transactionUsecase usecase.TransactionUsecase) *TransactionController {
+	return &TransactionController{transactionUsecase}
 }
 
-func (c *transactionController) TopUp(ctx *fiber.Ctx) error {
+func (c *TransactionController) TopUp(ctx *fiber.Ctx) error {
 
-	uuid := ctx.Locals("uuid").(string)
+	claims := ctx.Locals(constant.UserContext).(jwt.MapClaims)
+	id := claims["id"].(string)
 
 	var req dto.TopUpRequest
 	if err := ctx.BodyParser(&req); err != nil {
@@ -28,7 +30,7 @@ func (c *transactionController) TopUp(ctx *fiber.Ctx) error {
 		})
 	}
 
-	response, err := c.transactionUsecase.TopUp(req, uuid)
+	response, err := c.transactionUsecase.TopUp(req, id)
 	if err != nil {
 		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{
 			"message": err.Error(),

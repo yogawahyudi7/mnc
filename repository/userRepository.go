@@ -11,7 +11,7 @@ type UserRepository interface {
 	GetUserByPhoneNumber(phoneNumber string) (*model.User, error)
 	GetUserByID(userId string) (*model.User, error)
 	UpdateUser(user *model.User) error
-	TopUp(amount float64, uuid string) (*model.User, error)
+	TopUp(amount float64, uuid string) error
 }
 
 type userRepository struct {
@@ -43,13 +43,13 @@ func (r *userRepository) GetUserByID(userId string) (*model.User, error) {
 }
 
 func (r *userRepository) UpdateUser(user *model.User) error {
-	return r.db.Save(user).Error
+	return r.db.Where("id = ?", user.Id).Updates(user).Error
 }
 
-func (r *userRepository) TopUp(amount float64, uuid string) (*model.User, error) {
+func (r *userRepository) TopUp(amount float64, uuid string) error {
 	var user model.User
 	if err := r.db.Model(&user).Where("id = ?", uuid).Update("balance", gorm.Expr("balance + ?", amount)).Error; err != nil {
-		return &user, err
+		return err
 	}
-	return &user, nil
+	return nil
 }

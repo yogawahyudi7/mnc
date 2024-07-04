@@ -22,7 +22,7 @@ func NewTokenRepository(db *gorm.DB) RefreshTokenRepository {
 }
 
 func (r *tokenRepository) CreateRefreshToken(token *model.RefreshToken) error {
-	return r.db.Create(token).Error
+	return r.db.Save(token).Error
 }
 
 func (r *tokenRepository) GetToken(token string) (*model.RefreshToken, error) {
