@@ -58,8 +58,8 @@ type TransferResponse struct {
 }
 
 type PaymentRequest struct {
-	PhoneNumber string  `json:"phone_number"`
-	Amount      float64 `json:"amount"`
+	Amount  float64 `json:"amount"`
+	Remarks string  `json:"remarks"`
 }
 
 type PaymentResponse struct {
@@ -67,6 +67,7 @@ type PaymentResponse struct {
 	AmountPayment float64   `json:"amount_payment"`
 	BalanceBefore float64   `json:"balance_before"`
 	BalanceAfter  float64   `json:"balance_after"`
+	Remarks       string    `json:"remarks"`
 	CreatedDate   string    `json:"created_date"`
 }
 

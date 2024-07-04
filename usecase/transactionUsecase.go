@@ -15,7 +15,7 @@ import (
 type TransactionUsecase interface {
 	TopUp(request dto.TopUpRequest, id string) (*dto.TopUpResponse, error)
 	Transfer(request dto.TransferRequest, id string) (*dto.TransferResponse, error)
-	Payment(request dto.PaymentRequest) (*dto.PaymentResponse, error)
+	Payment(request dto.PaymentRequest, id string) (*dto.PaymentResponse, error)
 }
 
 type transactionUsecase struct {
@@ -42,16 +42,14 @@ func (u *transactionUsecase) TopUp(request dto.TopUpRequest, id string) (*dto.To
 		return nil, errors.New("user not found")
 	}
 
-	err = u.userRepo.TopUp(request.Amount, id)
+	err = u.transactionRepo.TopUp(request.Amount, id)
 	if err != nil {
 		return nil, err
 	}
 
-	userId, _ := uuid.Parse(id)
-
 	dataTransaction := &model.Transaction{
 		Id:              uuid.New(),
-		UserId:          userId,
+		UserId:          userData.Id,
 		Amount:          request.Amount,
 		TransactionType: constant.TopUpType,
 		BalanceBefore:   userData.Balance,
@@ -114,6 +112,48 @@ func (u *transactionUsecase) Transfer(request dto.TransferRequest, senderId stri
 	}, nil
 }
 
-func (u *transactionUsecase) Payment(request dto.PaymentRequest) (*dto.PaymentResponse, error) {
-	return nil, nil
+func (u *transactionUsecase) Payment(request dto.PaymentRequest, id string) (*dto.PaymentResponse, error) {
+	if request.Amount <= 0 {
+		return nil, errors.New("amount must be greater than 0")
+	}
+
+	userData, err := u.userRepo.GetUserByID(id)
+	if err != nil {
+		return nil, errors.New("user not found")
+	}
+
+	if userData.Balance < request.Amount {
+		return nil, errors.New("insufficient balance")
+	}
+
+	err = u.transactionRepo.Payment(request.Amount, userData.Id.String())
+	if err != nil {
+		return nil, err
+	}
+
+	dataTransaction := &model.Transaction{
+		Id:              uuid.New(),
+		UserId:          userData.Id,
+		Amount:          request.Amount,
+		TransactionType: constant.PaymentType,
+		BalanceBefore:   userData.Balance,
+		BalanceAfter:    userData.Balance - request.Amount,
+		Remarks:         request.Remarks,
+	}
+
+	err = u.transactionRepo.CreateTransaction(dataTransaction)
+	if err != nil {
+		return nil, err
+	}
+
+	response := &dto.PaymentResponse{
+		PaymentID:     dataTransaction.Id,
+		AmountPayment: request.Amount,
+		BalanceBefore: userData.Balance,
+		BalanceAfter:  dataTransaction.BalanceAfter,
+		Remarks:       request.Remarks,
+		CreatedDate:   dataTransaction.CreatedAt.Format(constant.TimeFormatYMDHMS),
+	}
+
+	return response, nil
 }
