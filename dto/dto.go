@@ -44,3 +44,64 @@ type TopUpResponse struct {
 	BalanceAfter  float64    `json:"balance_after"`
 	CreatedDate   *time.Time `json:"created_date"`
 }
+
+type TransferRequest struct {
+	TargetUser string  `json:"target_user"`
+	Amount     float64 `json:"amount"`
+	Remarks    string  `json:"remarks"`
+}
+
+type TransferResponse struct {
+	TransferID    uuid.UUID  `json:"transfer_id"`
+	Amount        float64    `json:"amount"`
+	BalanceBefore float64    `json:"balance_before"`
+	BalanceAfter  float64    `json:"balance_after"`
+	CreatedDate   *time.Time `json:"created_date"`
+}
+
+type PaymentRequest struct {
+	PhoneNumber string  `json:"phone_number"`
+	Amount      float64 `json:"amount"`
+}
+
+type PaymentResponse struct {
+	PaymentID     uuid.UUID  `json:"payment_id"`
+	AmountPayment float64    `json:"amount_payment"`
+	BalanceBefore float64    `json:"balance_before"`
+	BalanceAfter  float64    `json:"balance_after"`
+	CreatedDate   *time.Time `json:"created_date"`
+}
+
+type TransactionHistoryResponse struct {
+	TransactionID uuid.UUID  `json:"transaction_id"`
+	Transaction   string     `json:"transaction"`
+	Amount        float64    `json:"amount"`
+	BalanceBefore float64    `json:"balance_before"`
+	BalanceAfter  float64    `json:"balance_after"`
+	CreatedDate   *time.Time `json:"created_date"`
+}
+
+type UpdateUserRequest struct {
+	FirstName   string `json:"first_name"`
+	LastName    string `json:"last_name"`
+	Address     string `json:"address"`
+	PhoneNumber string `json:"phone_number"`
+}
+
+type UpdateUserResponse struct {
+	UserID      uuid.UUID `json:"user_id"`
+	FirstName   string    `json:"first_name"`
+	LastName    string    `json:"last_name"`
+	PhoneNumber string    `json:"phone_number"`
+	Address     string    `json:"address"`
+	UpdatedDate string    `json:"updated_date"`
+}
+
+type GetUserResponse struct {
+	UserID      uuid.UUID `json:"user_id"`
+	FirstName   string    `json:"first_name"`
+	LastName    string    `json:"last_name"`
+	PhoneNumber string    `json:"phone_number"`
+	Address     string    `json:"address"`
+	CreatedDate string    `json:"created_date"`
+}

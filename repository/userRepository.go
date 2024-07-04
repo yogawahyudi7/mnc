@@ -3,15 +3,15 @@ package repository
 import (
 	"github.com/yogawahyudi7/mnc/model"
 
-	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
 type UserRepository interface {
 	CreateUser(user *model.User) error
 	GetUserByPhoneNumber(phoneNumber string) (*model.User, error)
-	GetUserByID(userID uuid.UUID) (*model.User, error)
+	GetUserByID(userId string) (*model.User, error)
 	UpdateUser(user *model.User) error
+	TopUp(amount float64, uuid string) (*model.User, error)
 }
 
 type userRepository struct {
@@ -34,9 +34,9 @@ func (r *userRepository) GetUserByPhoneNumber(phoneNumber string) (*model.User, 
 	return &user, nil
 }
 
-func (r *userRepository) GetUserByID(userID uuid.UUID) (*model.User, error) {
+func (r *userRepository) GetUserByID(userId string) (*model.User, error) {
 	var user model.User
-	if err := r.db.Where("user_id = ?", userID).First(&user).Error; err != nil {
+	if err := r.db.Where("id = ?", userId).First(&user).Error; err != nil {
 		return nil, err
 	}
 	return &user, nil
@@ -44,4 +44,12 @@ func (r *userRepository) GetUserByID(userID uuid.UUID) (*model.User, error) {
 
 func (r *userRepository) UpdateUser(user *model.User) error {
 	return r.db.Save(user).Error
+}
+
+func (r *userRepository) TopUp(amount float64, uuid string) (*model.User, error) {
+	var user model.User
+	if err := r.db.Model(&user).Where("id = ?", uuid).Update("balance", gorm.Expr("balance + ?", amount)).Error; err != nil {
+		return &user, err
+	}
+	return &user, nil
 }

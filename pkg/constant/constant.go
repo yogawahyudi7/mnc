@@ -11,4 +11,8 @@ const (
 	InvalidRequestBody  = "invalid request body"
 
 	UpperCaseSuccess = "SUCCESS"
+
+	AuthorizationHeader = "Authorization"
+	UserContext         = "user"
+	InvalidToken        = "invalid token"
 )

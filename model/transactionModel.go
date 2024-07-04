@@ -14,6 +14,7 @@ type Transaction struct {
 	TransactionType string          `gorm:"column:transaction_type"`
 	BalanceBefore   float64         `gorm:"column:balance_before"`
 	BalanceAfter    float64         `gorm:"column:balance_after"`
+	Remarks         string          `gorm:"column:remarks"`
 	CreatedAt       *time.Time      `gorm:"column:created_at"`
 	UpdatedAt       *time.Time      `gorm:"column:updated_at"`
 	DeletedAt       *gorm.DeletedAt `gorm:"column:deleted_at"`

@@ -5,6 +5,7 @@ CREATE TABLE IF NOT EXISTS "transaction" (
     transaction_type VARCHAR(10) NOT NULL,
     balance_before DECIMAL(18,2) NOT NULL,
     balance_after DECIMAL(18,2) NOT NULL,
+    remarks TEXT,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     deleted_at TIMESTAMP,
