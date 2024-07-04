@@ -78,7 +78,7 @@ func (u *transactionUsecase) Transfer(request dto.TransferRequest, senderId stri
 		return nil, errors.New("amount must be greater than 0")
 	}
 
-	sender, err := u.userRepo.GetUserByPhoneNumber(senderId)
+	sender, err := u.userRepo.GetUserByID(senderId)
 	if err != nil {
 		return nil, errors.New("sender not found")
 	}
@@ -95,11 +95,22 @@ func (u *transactionUsecase) Transfer(request dto.TransferRequest, senderId stri
 	sender.Balance -= request.Amount
 	recipient.Balance += request.Amount
 
-	if err := u.userRepo.UpdateUser(sender); err != nil {
+	err = u.transactionRepo.Transfer(request.Amount, sender.Id.String(), recipient.Id.String())
+	if err != nil {
 		return nil, err
 	}
 
-	if err := u.userRepo.UpdateUser(recipient); err != nil {
+	dataTransaction := &model.Transaction{
+		Id:              uuid.New(),
+		UserId:          sender.Id,
+		Amount:          request.Amount,
+		TransactionType: constant.TransferType,
+		BalanceBefore:   sender.Balance + request.Amount,
+		BalanceAfter:    sender.Balance,
+		Remarks:         request.Remarks,
+	}
+	err = u.transactionRepo.CreateTransaction(dataTransaction)
+	if err != nil {
 		return nil, err
 	}
 
@@ -108,6 +119,7 @@ func (u *transactionUsecase) Transfer(request dto.TransferRequest, senderId stri
 		Amount:        request.Amount,
 		BalanceBefore: sender.Balance + request.Amount,
 		BalanceAfter:  sender.Balance,
+		Remarks:       request.Remarks,
 		CreatedDate:   time.Now().Format(constant.TimeFormatYMDHMS),
 	}, nil
 }

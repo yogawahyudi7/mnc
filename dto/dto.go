@@ -54,6 +54,7 @@ type TransferResponse struct {
 	Amount        float64   `json:"amount"`
 	BalanceBefore float64   `json:"balance_before"`
 	BalanceAfter  float64   `json:"balance_after"`
+	Remarks       string    `json:"remarks"`
 	CreatedDate   string    `json:"created_date"`
 }
 

@@ -10,4 +10,5 @@ import (
 func RegisterTransactionRoutes(router fiber.Router, config *config.Server, controller *controller.TransactionController) {
 	router.Post("/topup", middleware.Authentication(config), controller.TopUp)
 	router.Post("/payment", middleware.Authentication(config), controller.Payment)
+	router.Post("/transfer", middleware.Authentication(config), controller.Transfer)
 }
